@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Simple base Docker image for a TensorFlow research environment.
+# Simple TensorFlow Docker image for use as research base image.
 #
 # Author: Ryan Eloff
 # Contact: ryan.peter.eloff@gmail.com
@@ -10,7 +10,7 @@
 #   $ nvidia-docker run -it --name my_container <image-build-tag> bash
 # ------------------------------------------------------------------------------
 FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
-LABEL author="Ryan Eloff" date="28-09-2018"
+LABEL author="Ryan Eloff" date="01-10-2018"
 # ------------------------------------------------------------------------------
 # Install Python 3.6 from the deadsnakes PPA and link as default python
 # ------------------------------------------------------------------------------
@@ -27,17 +27,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 && ln -s /usr/bin/python3.6 /usr/local/bin/python \
 && python -m pip --no-cache-dir install --upgrade \
     setuptools \
-# ------------------------------------------------------------------------------
-# Install TensorFlow for GPU
-# ------------------------------------------------------------------------------
-&& python -m pip --no-cache-dir install --upgrade \
-    tensorflow-gpu \
-&& ldconfig \
 && apt-get clean \
 && apt-get autoremove \
 && rm -rf /var/lib/apt/lists/* \
-          /etc/apt/sources.list.d/*\
-          /tmp/*
+          /etc/apt/sources.list.d/*
+# ------------------------------------------------------------------------------
+# Install TensorFlow for GPU
+# ------------------------------------------------------------------------------
+RUN python -m pip --no-cache-dir install --upgrade tensorflow-gpu
 # ------------------------------------------------------------------------------
 # Set default command to '/bin/sh -c bash'
 # ------------------------------------------------------------------------------

@@ -5,13 +5,13 @@
 # Contact: ryan.peter.eloff@gmail.com
 # Date: July 2018
 # ------------------------------------------------------------------------------
-# Image based on the Kaldi fork https://github.com/rpeloff/kaldi.   
+# Image based on the Kaldi fork https://github.com/rpeloff/kaldi.
 # ------------------------------------------------------------------------------
 # NOTE: Specify the number of cores used to build Kaldi with N_BUILD_CORES:
 #   $ docker build --build-arg N_BUILD_CORES=12 -t reloff/kaldi:latest .
 # ------------------------------------------------------------------------------
 FROM ubuntu:16.04
-LABEL author="Ryan Eloff" date="28-09-2018"
+LABEL author="Ryan Eloff" date="01-10-2018"
 # ------------------------------------------------------------------------------
 # Define number of cores to use when building Kaldi (default 8)
 # ------------------------------------------------------------------------------
@@ -30,9 +30,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 && ln -s /usr/bin/python2.7 /usr/bin/python \
 && rm -rf /var/lib/apt/lists/*
 # ------------------------------------------------------------------------------
-# Clone the Kaldi repo, forked at commit #2567
+# Clone branch 5.4 of the Kaldi official repo, forked at commit #2742
 # ------------------------------------------------------------------------------
-RUN git clone --depth 1 https://github.com/rpeloff/kaldi.git /kaldi
+RUN git clone --depth 1 -b 5.4 --single-branch \
+    https://github.com/rpeloff/kaldi.git /kaldi
 # ------------------------------------------------------------------------------
 # Install additional Kaldi dependencies
 # ------------------------------------------------------------------------------
@@ -48,14 +49,11 @@ RUN make -j ${N_BUILD_CORES}
 # Configure and install Kaldi using shared libraries
 # ------------------------------------------------------------------------------
 WORKDIR /kaldi/src
-RUN ./configure --shared \ 
+RUN ./configure --shared \
     && make depend -j ${N_BUILD_CORES} \
     && make -j ${N_BUILD_CORES}
 # ------------------------------------------------------------------------------
-# Set / as the default working directory
+# Set / as default working directory and '/bin/sh -c bash' as default command
 # ------------------------------------------------------------------------------
 WORKDIR /
-# ------------------------------------------------------------------------------
-# Set default command to '/bin/sh -c bash'
-# ------------------------------------------------------------------------------
 CMD ["bash"]

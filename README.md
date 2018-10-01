@@ -4,7 +4,9 @@ A repository for Docker images used to build research environments.
 
 ## TensorFlow Base
 
-https://hub.docker.com/r/reloff/tensorflow-base/
+<a href="https://hub.docker.com/r/reloff/tensorflow-base/">
+    <img src="https://img.shields.io/badge/Docker Hub-reloff/tensorflow--base-ff69b4.svg?longCache=true&style=for-the-badge"
+    alt="Image on Docker Hub"></a>
 
 Provides a minimal installation of TensorFlow (https://www.tensorflow.org/), intended to be used as the base image for TensorFlow research environments.
 
@@ -12,7 +14,10 @@ Currently provides only Ubuntu 16.04 (with CUDA+cuDNN) and Python 3.6 Docker ima
 
 ## Kaldi
 
-https://hub.docker.com/r/reloff/kaldi/
+<a href="https://hub.docker.com/r/reloff/kaldi/">
+    <img src="https://img.shields.io/badge/Docker Hub-reloff/kaldi-ff69b4.svg?longCache=true&style=for-the-badge"
+    alt="Image on Docker Hub"></a>
+
 
 Provides the Kaldi Speech Recognition Toolkit (http://kaldi-asr.org) in a simple Docker image. 
 
