@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
     python2.7 \
+    python2.7-dev \
     python3 \
     libtool-bin \
     g++ \
