@@ -9,8 +9,11 @@
 # Usage with nvidia-docker:
 #   $ nvidia-docker run -it --name my_container <image-build-tag> bash
 # ------------------------------------------------------------------------------
+# NOTE: Specify the PyTorch release version with TORCH_VERSION:
+#   $ docker build --build-arg TORCH_VERSION=0.4.1 -t reloff/kaldi:latest .
+# ------------------------------------------------------------------------------
 FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
-LABEL author="Ryan Eloff" date="05-11-2018"
+LABEL author="Ryan Eloff" date="19-11-2018"
 # ------------------------------------------------------------------------------
 # Install Python 3.6 from the deadsnakes PPA and link as default python
 # ------------------------------------------------------------------------------
@@ -32,9 +35,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 && rm -rf /var/lib/apt/lists/* \
           /etc/apt/sources.list.d/*
 # ------------------------------------------------------------------------------
-# Install PyTorch
+# Define TensorFlow GPU release version to install (defaults to latest release)
 # ------------------------------------------------------------------------------
-RUN python -m pip --no-cache-dir install --upgrade torch torchvision
+ARG TORCH_VERSION
+# ------------------------------------------------------------------------------
+# Install PyTorch (==${TORCH_VERSION} if specified)
+# ------------------------------------------------------------------------------
+RUN python -m pip --no-cache-dir install --upgrade \
+    torch${TORCH_VERSION:+\=\=${TORCH_VERSION}} \
+    torchvision
 # ------------------------------------------------------------------------------
 # Set default command to '/bin/sh -c bash'
 # ------------------------------------------------------------------------------

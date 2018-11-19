@@ -9,8 +9,11 @@
 # Usage with nvidia-docker:
 #   $ nvidia-docker run -it --name my_container <image-build-tag> bash
 # ------------------------------------------------------------------------------
+# NOTE: Specify the TensorFlow GPU release version with TF_VERSION:
+#   $ docker build --build-arg TF_VERSION=1.12.0 -t reloff/kaldi:latest .
+# ------------------------------------------------------------------------------
 FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
-LABEL author="Ryan Eloff" date="01-10-2018"
+LABEL author="Ryan Eloff" date="19-11-2018"
 # ------------------------------------------------------------------------------
 # Install Python 3.6 from the deadsnakes PPA and link as default python
 # ------------------------------------------------------------------------------
@@ -32,9 +35,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 && rm -rf /var/lib/apt/lists/* \
           /etc/apt/sources.list.d/*
 # ------------------------------------------------------------------------------
-# Install TensorFlow for GPU
+# Define TensorFlow GPU release version to install (defaults to latest release)
 # ------------------------------------------------------------------------------
-RUN python -m pip --no-cache-dir install --upgrade tensorflow-gpu
+ARG TF_VERSION
+# ------------------------------------------------------------------------------
+# Install TensorFlow for GPU (==${TF_VERSION} if specified)
+# ------------------------------------------------------------------------------
+RUN python -m pip --no-cache-dir install --upgrade \
+    tensorflow-gpu${TF_VERSION:+\=\=${TF_VERSION}}
 # ------------------------------------------------------------------------------
 # Set default command to '/bin/sh -c bash'
 # ------------------------------------------------------------------------------
