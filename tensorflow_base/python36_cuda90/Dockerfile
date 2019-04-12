@@ -13,7 +13,7 @@
 #   $ docker build --build-arg TF_VERSION=1.12.0 -t reloff/tensorflow-base:latest .
 # ------------------------------------------------------------------------------
 FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
-LABEL author="Ryan Eloff" date="11-04-2018"
+LABEL author="Ryan Eloff" date="11-04-2019"
 # ------------------------------------------------------------------------------
 # Install Python 3.6 from the deadsnakes PPA and link as default python
 # ------------------------------------------------------------------------------
