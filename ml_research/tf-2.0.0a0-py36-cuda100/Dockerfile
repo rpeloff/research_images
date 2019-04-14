@@ -10,9 +10,9 @@
 #   $ nvidia-docker run -it --name my_container <image-build-tag> bash
 # ------------------------------------------------------------------------------
 # Build:
-#   $ docker build -t reloff/ml-research:tf-1.13.1-py36-cuda90 .
+#   $ docker build -t reloff/ml-research:tf-2.0.0a0-py36-cuda100 .
 # ------------------------------------------------------------------------------
-FROM reloff/tensorflow-base:1.13.1-py36-cuda90
+FROM reloff/tensorflow-base:2.0.0a0-py36-cuda100
 LABEL author="Ryan Eloff" date="12-04-2019"
 # ------------------------------------------------------------------------------
 # Install requirements from requirements.txt

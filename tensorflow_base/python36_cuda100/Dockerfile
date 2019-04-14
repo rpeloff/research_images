@@ -1,23 +1,23 @@
 # ------------------------------------------------------------------------------
 # Minimal TensorFlow GPU and Python 3.6 on Ubuntu for use as a base image.
 #
-# This image is based on Ubuntu 16.04 with CUDA 9.0 and cuDNN 7, therefore
-# supporting official tensorflow-gpu releases version 1.5.0 through 1.12.0. See 
+# This image is based on Ubuntu 16.04 with CUDA 10.0 and cuDNN 7, therefore
+# supporting official tensorflow-gpu releases version 1.13.1 and 2.0.0a0. See 
 # https://www.tensorflow.org/install/source#tested_build_configurations for
 # more on supported build configurations.
 #
 # Author: Ryan Eloff
 # Contact: ryan.peter.eloff@gmail.com
-# Date: September 2018
+# Date: April 2019
 # ------------------------------------------------------------------------------
 # Usage with nvidia-docker:
 #   $ nvidia-docker run -it --name my_container <image-build-tag> bash
 # ------------------------------------------------------------------------------
 # NOTE: Specify the TensorFlow GPU release version with TF_VERSION:
-#   $ docker build --build-arg TF_VERSION=1.12.0 -t reloff/tensorflow-base:1.12.0-py36-cuda90 .
+#   $ docker build --build-arg TF_VERSION=2.0.0a0 -t reloff/tensorflow-base:2.0.0a0-py36-cuda100 .
 # ------------------------------------------------------------------------------
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
-LABEL author="Ryan Eloff" date="11-04-2019"
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04
+LABEL author="Ryan Eloff" date="14-04-2019"
 # ------------------------------------------------------------------------------
 # Install Python 3.6 from the deadsnakes PPA and link as default python
 # ------------------------------------------------------------------------------

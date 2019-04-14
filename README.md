@@ -1,6 +1,6 @@
 # Docker Research Images
 
-A repository for Docker images used to build research environments.
+This repository contains a collection of Docker images used to set up my research environments. Inspired by the [_Deepo_](https://github.com/ufoym/deepo) series of Docker images.
 
 ## TensorFlow Base
 
@@ -8,7 +8,7 @@ A repository for Docker images used to build research environments.
     <img src="https://img.shields.io/badge/Docker Hub-reloff/tensorflow--base-ff69b4.svg?longCache=true&style=for-the-badge"
     alt="Image on Docker Hub"></a>
 
-Provides a minimal installation of TensorFlow (https://www.tensorflow.org/), intended to be used as a base image for TensorFlow research environments.
+Provides a minimal installation of TensorFlow (https://www.tensorflow.org/) with GPU support on Ubuntu, intended to be used as a base image for TensorFlow research environments.
 
 Currently provides only Ubuntu 16.04 (with CUDA+cuDNN) and Python 3.6 Docker images. Requires `nvidia-docker` (https://github.com/NVIDIA/nvidia-docker) to run containers with GPU support.
 
