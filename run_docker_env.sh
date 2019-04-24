@@ -25,10 +25,12 @@ usage()
     echo "    -r, --research-dir <dir>         Mount the research directory to the container (Default: current working directory)."
     echo "        --jupyter-port <number>      Port the Jupyter server will bind on (Default: 8888)."
     echo "        --vs-port <number>           Port the VSCode code-server server will bind on (Default: 8443)."
+    echo "    -p, --port <number>              Additional port to expose (multiple -p flags may be used)."
     echo "        --jupyter-password <string>  Token used to access Jupyter Lab (Default: No authentication)."
     echo "        --vs-password <string>       Token used to access VSCode code-server (Default: No authentication)."
     echo "    -e, --vs-extensions <dir>        Set the root path for extensions (Default: No directory)."
     echo "    -c, --command <string>           Specify a command to run instead of Jupyter and VSCode servers (Default: None)."
+    echo "    -p, --port <number>              Specify a command to run instead of Jupyter and VSCode servers (Default: None)."
     echo "    -h, --help                       Print this information and exit."
     echo ""
 }
@@ -53,6 +55,7 @@ print_options()
         echo "Docker command: ${command}"
         echo "(Not executing Jupyter and VSCode servers)"
     fi
+    echo "Additional ports command: ${add_port}"
     echo ""
 }
 
@@ -65,20 +68,24 @@ process_options()
         command="${command} --port=${jupyter_port}"
         command="${command} --NotebookApp.token=${jupyter_password}"
         command="${command} --notebook-dir='/research'"
-        command="${command} --allow-root"
         command="${command} &"
         command="${command} code-server"
-        command="${command} -d /research"
+        command="${command} -d /home/docker"
         command="${command} -p ${vs_port}"
         if [ -z "${vs_password}" ]; then
             command="${command} --no-auth"
         else
             command="${command} --password ${vs_password}"
         fi
+        vs_ext_docker=
         if [ ! -z "${vs_extensions}" ]; then
-            command="${command} -e ${vs_extensions}"
+            command="${command} -e /.vscode/extensions"
+            vs_ext_docker="-v ${vs_extensions}:/.vscode/extensions"
         fi
         command="${command} --allow-http"
+        command="${command} --disable-telemetry"
+        command="${command} &"
+        command="${command} bash"
     else
         command="${cmd_arg}"
     fi
@@ -95,6 +102,7 @@ docker_run()
             -w /research \
             --rm \
             -it \
+            ${add_port} \
             --name ${name} \
             ${image} \
             /bin/bash -c "$command"
@@ -103,12 +111,14 @@ docker_run()
         docker run \
             --runtime=nvidia \
             -v ${research_dir}:/research \
+            ${vs_ext_docker} \
             -u $(id -u):$(id -g) \
             -w /research \
             --rm \
             -it \
             -p ${jupyter_port}:${jupyter_port} \
             -p ${vs_port}:${vs_port} \
+            ${add_port} \
             --name ${name} \
             ${image} \
             /bin/bash -c "$command"
@@ -118,12 +128,14 @@ docker_run()
             --runtime=nvidia \
             -v ${research_dir}:/research \
             -v ${data_dir}:/data \
+            ${vs_ext_docker} \
             -u $(id -u):$(id -g) \
             -w /research \
             --rm \
             -it \
             -p ${jupyter_port}:${jupyter_port} \
             -p ${vs_port}:${vs_port} \
+            ${add_port} \
             --name ${name} \
             ${image} \
             /bin/bash -c "$command"
@@ -143,6 +155,7 @@ data_dir=
 research_dir=$(pwd)
 jupyter_port=8888
 vs_port=8443
+add_port=
 jupyter_password=
 vs_password=
 vs_extensions=
@@ -169,6 +182,9 @@ while [ "$1" != "" ]; do
                                 ;;
         --vs-port )             shift
                                 vs_port=$1
+                                ;;
+        -p | --port )           shift
+                                add_port="${add_port} -p ${1}:${1}"
                                 ;;
         --jupyter-password )    shift
                                 jupyter_password=$1
