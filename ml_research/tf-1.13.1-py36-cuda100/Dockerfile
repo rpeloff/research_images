@@ -35,6 +35,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget \
 && rm code-server${code_server_version}-linux-x64.tar.gz
 ENV PATH="/usr/local/bin/code-server${code_server_version}-linux-x64:${PATH}"
 # ------------------------------------------------------------------------------
+# Create a user and group docker:docker with uid 1000:1000
+# ------------------------------------------------------------------------------
+RUN groupadd -r -g 1000 docker && useradd --no-log-init --create-home -r -g 1000 -u 1000 docker
+# ------------------------------------------------------------------------------
 # Set default command to '/bin/sh -c bash'
 # ------------------------------------------------------------------------------
 CMD ["bash"]

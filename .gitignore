@@ -12,5 +12,7 @@
 !*.txt
 # Markdown
 !*.md
+# Bash scripts
+!*.sh
 
 .ipynb_checkpoints
