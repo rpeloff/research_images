@@ -7,3 +7,4 @@ matplotlib==3.0.3
 jupyter==1.0.0
 jupyterlab==0.35.4
 tqdm==4.31.1
+pylint
