@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Run Jupyter Lab and VSCode in a Docker research enivronment for remote access.
+# Start Docker research container and optionally run Jupyter or a specified command.
 #
 # Author: Ryan Eloff
 # Contact: ryan.peter.eloff@gmail.com
