@@ -14,7 +14,7 @@ Machine learning research environment including common tools for model developme
 
 I have included a script `run_docker_env.sh` that I use to spin up docker containers. This is useful with my `reloff/ml-research` image to quickly setup machine learning research environments without the hassle of messing with Docker parameters to mount folders, set file ownership, etc. This inlcudes optional sudo with `--sudo`, so that your files are owned by you by default, access to the `nvidia-docker` GPU runtime with a simple `--nvidia-gpu` flag, access to Jupyter Lab or Notebook, easy volume mounting, and other convenience options. See `run_docker_env.sh --help` for more info.
 
-To install on a local level, run `./install_rde.sh`. You should then have access to the docker environment script `run_docker_env.sh` from anywhere on your machine.
+To install on a local level, run `./install_docker_env.sh`. You should then have access to the docker environment script `run_docker_env.sh` from anywhere on your machine.
 
 ## TensorFlow Base
 
