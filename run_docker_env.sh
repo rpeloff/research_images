@@ -71,15 +71,17 @@ process_options()
         # run jupyter in background if executing bash
         if [ "${run_bash}" = true ]; then
             command="${command} &"
+        else
+            command="${command} ;"
         fi
     fi
     # run bash after all other commands have completed or been sent to background
     if [ "${run_bash}" = true ]; then
         command="${command} bash"
+        command="${command} ;"
     fi
     # change ownership of files from docker root to current user on exit (if run as sudo)
     if [ "${run_sudo}" = true ]; then
-        command="${command} ;"
         command="${command} chown -R $(id -u):$(id -g) /research"
     fi
 
