@@ -21,6 +21,15 @@ COPY requirements.txt /tmp
 RUN python -m pip --no-cache-dir install --upgrade -r /tmp/requirements.txt \
 && rm -rf /tmp/*
 # ------------------------------------------------------------------------------
+# Install graphviz to plot Keras models
+# ------------------------------------------------------------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    graphviz \
+&& apt-get clean \
+&& apt-get autoremove \
+&& rm -rf /var/lib/apt/lists/* \
+          /etc/apt/sources.list.d/*
+# ------------------------------------------------------------------------------
 # Create a user and group docker:docker with uid 1000:1000
 # ------------------------------------------------------------------------------
 RUN groupadd -r -g 1000 docker && useradd --no-log-init --create-home -r -g 1000 -u 1000 docker
