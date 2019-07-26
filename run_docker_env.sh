@@ -83,9 +83,8 @@ process_options()
     # change ownership of files from docker root to current user on exit (if run as sudo)
     if [ "${run_sudo}" = true ]; then
         command="${command} chown -R $(id -u):$(id -g) /research"
+        command="${command} ;"
     fi
-
-    command="${command} ; "
 }
 
 print_options()
