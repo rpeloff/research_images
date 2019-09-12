@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Start Docker research container and optionally run Jupyter or a specified command.
-#
+description="Simple and reuseable Docker research environments."
+
 # Author: Ryan Eloff
 # Contact: ryan.peter.eloff@gmail.com
 # Date: April 2019
@@ -15,7 +15,7 @@ usage()
     echo ""
     echo "usage: run-docker-env [options]"
     echo ""
-    echo "Start Docker research container and optionally run Jupyter or a specified command."
+    echo "${description}"
     echo "(Run script with sudo if Docker is not set up for non-root users)"
     echo ""
     echo "Options:"
@@ -30,9 +30,11 @@ usage()
     echo "        --jupyter-password <string>  Token used to access Jupyter Lab (Default: No authentication)."
     echo "        --jupyter-port <number>      Port the Jupyter server will bind on (Default: 8888)."
     echo "    -n, --name <string>              Set the container name (Default: random)."
+    echo "        --no-reuse                   Do not attempt to reuse an existing container with the same name (remove any existing container)."
     echo "        --nvidia-gpu                 Run Docker with nvidia runtime for access to GPU (Default: standard runtime)."
     echo "    -p, --port <number>              Additional port to expose (multiple -p flags may be used)."
     echo "    -r, --research-dir <dir>         Mount the research directory to the container (Default: current working directory)."
+    echo "        --remove                     Remove container on exit."
     echo "        --sudo                       Run docker as root and chown files after execution (Default: run with current uid:gid)."
     echo ""
 }
@@ -89,32 +91,61 @@ process_options()
 
 print_options()
 {
-    echo "Start Docker research container and optionally run Jupyter or specified command."
-    echo "(Run script with sudo if Docker is not set up for non-root users)"
+    echo "run-docker-env"
+    echo "=============="
+    echo "${description}"
     echo ""
-    echo "Docker image: ${image}"
-    echo "Docker container: ${name}"
-    echo "Data directory: ${data_dir}"
+    echo "Image: ${image}"
+    echo "Container name: ${name}"
     echo "Research directory: ${research_dir}"
+    echo "Data directory: ${data_dir}"
+    echo "Environment variables: ${env_list}"
     if [ ! -z "${cmd_arg}" ]; then
-        echo "User command: ${cmd_arg}"
+        echo "Command: ${cmd_arg}"
     fi
     if [ ! -z "${jupyter}" ]; then
         echo "Running Jupyter [${jupyter}]:"
-        echo "  - Jupyter server port: ${jupyter_port}"
+        echo "  - Jupyter server port (exposed): ${jupyter_port}"
         echo "  - Jupyter authentication token: ${jupyter_password}"
     fi
-    if [ "${run_bash}" = true ]; then
-        echo "Running bash in container"
-    fi 
-
-    echo "Additional ports command: ${add_port}"
+    echo "Exposed ports: ${port_list}"
+    echo "Flags:"
+    echo "  - interactive bash: ${run_bash}"
+    echo "  - detached mode: ${detach}"
+    echo "  - reuse container: ${reuse}"
+    echo "  - remove on exit: ${remove}"
+    echo "  - sudo: ${run_sudo}"
+    echo "  - nvidia runtime: ${use_gpu}"
     echo ""
 }
 
 docker_run()
 {
     # docker run and params
+    
+    if [ ! -z "${name}" ] && [ ! -z "$(docker container ls -a -q -f name=${name})" ]; then
+        if [ "${reuse}" = false ]; then
+            docker container stop ${name}
+            docker container rm ${name}
+        else
+            # get original image name (without tag after : delimiter)
+            original_image="$(docker inspect --format='{{.Config.Image}}' ${name})"
+            # original_image="$(print \"${original_image}\" | cut -d: -f1)"
+            original_image="${original_image%:*}"
+            commit_image="${original_image}:tmp_state_${name}"
+            echo "Found container '${name}' with image '${original_image}'."
+            echo "Commiting container state to '${commit_image}' for reuse."
+
+            docker commit ${name} ${commit_image}
+            docker container stop ${name}
+            docker container rm ${name}
+
+            image=${commit_image}
+            echo ""
+            echo "Attempting run in commited image: ${image}"
+            echo ""
+        fi
+    fi
     docker_cmd="docker run"
     # use nvidia-gpu runtime if specified
     if [ "${use_gpu}" = true ]; then
@@ -135,8 +166,12 @@ docker_run()
     if [ "${run_sudo}" = false ]; then
         docker_cmd="${docker_cmd} -u $(id -u):$(id -g)"
     fi
-    # work in /research, remove container on exit, and use interactive terminal
-    docker_cmd="${docker_cmd} -w /research --rm -it"
+    # work in /research and use interactive terminal
+    docker_cmd="${docker_cmd} -w /research -it"
+    # remove container on exit if specified
+    if [ "${remove}" = true ]; then
+        docker_cmd="${docker_cmd} --rm"
+    fi
     # run docker container in background if specified
     if [ "${detach}" = true ]; then
         docker_cmd="${docker_cmd} --detach"
@@ -146,7 +181,7 @@ docker_run()
         docker_cmd="${docker_cmd} -p ${jupyter_port}:${jupyter_port}"
     fi
     # expose additional ports
-    docker_cmd="${docker_cmd} ${add_port}"
+    docker_cmd="${docker_cmd} ${port_list}"
     # set container name
     if [ ! -z "${name}" ]; then
         docker_cmd="${docker_cmd} --name ${name}"    
@@ -154,7 +189,8 @@ docker_run()
     # set docker image
     docker_cmd="${docker_cmd} ${image}"
     
-    # docker run with [options] the specified command
+    # docker run with [options] the specified command (echo for info)
+    echo "${docker_cmd} /bin/bash -c ${command}"
     ${docker_cmd} /bin/bash -c "${command}"
 }
 
@@ -162,10 +198,10 @@ docker_run()
 # MAIN SCRIPT
 # -----------------------------------------------------------------------------
 
-# not using interactive mode
+# not using interactive mode (not implemented)
 interactive=
 # set default values
-add_port=
+port_list=
 cmd_arg=
 data_dir=
 detach=false
@@ -175,6 +211,8 @@ jupyter=
 jupyter_port=8888
 jupyter_password=
 name=
+reuse=true
+remove=false
 research_dir=$(pwd)
 run_bash=false
 run_sudo=false
@@ -207,19 +245,23 @@ while [ "$1" != "" ]; do
         --jupyter )             shift
                                 jupyter=$1
                                 ;;
-        --jupyter-port )        shift
-                                jupyter_port=$1
-                                ;;
         --jupyter-password )    shift
                                 jupyter_password=$1
+                                ;;
+        --jupyter-port )        shift
+                                jupyter_port=$1
                                 ;;
         -n | --name )           shift
                                 name=$1
                                 ;;
+        --no-reuse )            reuse=false
+                                ;;
         --nvidia-gpu )          use_gpu=true
                                 ;;
         -p | --port )           shift
-                                add_port="${add_port} -p ${1}:${1}"
+                                port_list="${port_list} -p ${1}:${1}"
+                                ;;
+        --remove )              remove=true
                                 ;;
         -r | --research-dir )   shift
                                 research_dir=$1
