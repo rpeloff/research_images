@@ -8,7 +8,7 @@
 # Image based on the Kaldi fork https://github.com/rpeloff/kaldi.
 # ------------------------------------------------------------------------------
 # NOTE: Specify the number of cores used to build Kaldi with N_BUILD_CORES:
-#   $ docker build --build-arg N_BUILD_CORES=12 -t reloff/kaldi:latest .
+#   $ docker build --build-arg N_BUILD_CORES=8 -t reloff/kaldi:latest .
 # ------------------------------------------------------------------------------
 FROM ubuntu:16.04
 LABEL author="Ryan Eloff" date="01-10-2018"
@@ -17,7 +17,8 @@ LABEL author="Ryan Eloff" date="01-10-2018"
 # ------------------------------------------------------------------------------
 ARG N_BUILD_CORES=8
 # ------------------------------------------------------------------------------
-# Install packages required to fetch and install Kaldi
+# Install packages required to fetch and install Kaldi, including 
+# Python 3.6 from the deadsnakes PPA (Python 2.7 linked as default)
 # ------------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-utils \
@@ -25,11 +26,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     python2.7 \
     python2.7-dev \
-    python3 \
     libtool-bin \
     g++ \
+    curl \
+    software-properties-common \
+    sudo \
+&& ln -s /usr/bin/python2.7 /usr/bin/python2 \
 && ln -s /usr/bin/python2.7 /usr/bin/python \
-&& rm -rf /var/lib/apt/lists/*
+&& add-apt-repository ppa:deadsnakes/ppa \
+&& apt-get update && apt-get install -y --no-install-recommends \
+    python3.6 \
+    python3.6-dev \
+&& curl https://bootstrap.pypa.io/get-pip.py | python3.6 \
+&& ln -s /usr/bin/python3.6 /usr/local/bin/python3 \
+&& python3 -m pip --no-cache-dir install --upgrade setuptools \
+&& apt-get clean \
+&& apt-get autoremove \
+&& rm -rf /var/lib/apt/lists/* \
+          /etc/apt/sources.list.d/*
 # ------------------------------------------------------------------------------
 # Clone branch 5.4 of the Kaldi official repo, forked at commit #2742
 # ------------------------------------------------------------------------------
