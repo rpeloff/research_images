@@ -8,16 +8,16 @@
 #
 # Author: Ryan Eloff
 # Contact: ryan.peter.eloff@gmail.com
-# Date: April 2019
+# Date: April 2019 (updated Septmeber 2019)
 # ------------------------------------------------------------------------------
 # Usage with nvidia-docker:
 #   $ nvidia-docker run -it --name my_container <image-build-tag> bash
 # ------------------------------------------------------------------------------
 # NOTE: Specify the TensorFlow GPU release version with TF_VERSION:
-#   $ docker build --build-arg TF_VERSION=2.0.0a0 -t reloff/tensorflow-base:2.0.0a0-py36-cuda100 .
+#   $ docker build --build-arg TF_VERSION=2.0.0-rc1 -t reloff/tensorflow-base:2.0.0-rc1-py36-cuda100 .
 # ------------------------------------------------------------------------------
 FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04
-LABEL author="Ryan Eloff" date="14-04-2019"
+LABEL author="Ryan Eloff" date="09-13-2019"
 # ------------------------------------------------------------------------------
 # Install Python 3.6 from the deadsnakes PPA and link as default python
 # ------------------------------------------------------------------------------
