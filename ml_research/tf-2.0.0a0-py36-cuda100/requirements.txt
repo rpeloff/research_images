@@ -5,7 +5,7 @@ scikit-learn==0.20.3
 pandas==0.24.2
 matplotlib==3.0.3
 jupyter==1.0.0
-jupyterlab==0.35.4
+jupyterlab==1.2.21
 tqdm==4.31.1
 pydot==1.4.1
 pylint==2.3.1
